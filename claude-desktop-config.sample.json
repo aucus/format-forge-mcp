@@ -1,0 +1,19 @@
+{
+  "_comment": "Claude Desktop MCP Server Configuration for FormatForge",
+  "_instructions": [
+    "1. Copy this file to ~/.config/claude/desktop-config.json",
+    "2. Replace '/path/to/your/FormatForge/dist/index.js' with your actual path",
+    "3. Restart Claude Desktop to load the MCP server"
+  ],
+  "mcpServers": {
+    "format-forge": {
+      "command": {
+        "name": "node",
+        "args": ["/path/to/your/FormatForge/dist/index.js"]
+      },
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

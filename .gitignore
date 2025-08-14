@@ -106,3 +106,6 @@ test-data/
 # Temporary files
 tmp/
 temp/
+
+# User-specific configuration files
+claude-desktop-config.json

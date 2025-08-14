@@ -1,22 +1,42 @@
 # Claude Desktop에서 FormatForge MCP 서버 사용하기
 
-## 🚀 설정 완료
+## 🚀 설정 가이드
 
-FormatForge MCP 서버가 Claude Desktop에 성공적으로 등록되었습니다!
+FormatForge MCP 서버를 Claude Desktop에 등록하는 방법을 안내합니다.
 
 ### 📁 설정 파일 위치
 ```
 ~/.config/claude/desktop-config.json
 ```
 
-### ⚙️ 등록된 설정
+### 🔧 설정 방법
+1. **샘플 파일 복사**:
+   ```bash
+   cp claude-desktop-config.sample.json ~/.config/claude/desktop-config.json
+   ```
+
+2. **경로 수정**:
+   ```bash
+   nano ~/.config/claude/desktop-config.json
+   ```
+   `/path/to/your/FormatForge/dist/index.js`를 실제 경로로 변경하세요.
+
+3. **Claude Desktop 재시작**
+
+### ⚙️ 샘플 설정
 ```json
 {
+  "_comment": "Claude Desktop MCP Server Configuration for FormatForge",
+  "_instructions": [
+    "1. Copy this file to ~/.config/claude/desktop-config.json",
+    "2. Replace '/path/to/your/FormatForge/dist/index.js' with your actual path",
+    "3. Restart Claude Desktop to load the MCP server"
+  ],
   "mcpServers": {
     "format-forge": {
       "command": {
         "name": "node",
-        "args": ["/Users/st/workspace_ai/FormatForge/dist/index.js"]
+        "args": ["/path/to/your/FormatForge/dist/index.js"]
       },
       "env": {
         "NODE_ENV": "production"

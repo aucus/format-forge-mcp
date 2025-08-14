@@ -15,8 +15,12 @@ A multi-format data converter MCP (Model Context Protocol) server for CSV, Excel
 
 2. **Configure Claude Desktop**:
    ```bash
-   # Copy the configuration
-   cp claude-desktop-config.json ~/.config/claude/desktop-config.json
+   # Option 1: Use the setup script (recommended)
+   ./setup-claude-desktop.sh
+   
+   # Option 2: Manual setup
+   cp claude-desktop-config.sample.json ~/.config/claude/desktop-config.json
+   nano ~/.config/claude/desktop-config.json  # Edit the path
    ```
 
 3. **Restart Claude Desktop** and start using:
@@ -65,8 +69,12 @@ npm install ./format-forge-mcp-1.0.0.tgz
 ### Claude Desktop Integration
 
 ```bash
-# Copy the Claude Desktop configuration
-cp claude-desktop-config.json ~/.config/claude/desktop-config.json
+# Option 1: Use the setup script (recommended)
+./setup-claude-desktop.sh
+
+# Option 2: Manual setup
+cp claude-desktop-config.sample.json ~/.config/claude/desktop-config.json
+nano ~/.config/claude/desktop-config.json  # Edit the path
 
 # Restart Claude Desktop to load the MCP server
 ```
