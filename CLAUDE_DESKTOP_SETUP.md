@@ -119,7 +119,7 @@ FormatForge MCP 서버를 Claude Desktop에 등록하는 방법을 안내합니�
 1. Claude Desktop을 재시작하세요
 2. 터미널에서 서버 상태를 확인하세요:
    ```bash
-   cd /Users/st/workspace_ai/FormatForge
+   cd /path/to/your/FormatForge
    node dist/index.js
    ```
 
