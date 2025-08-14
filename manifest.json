@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "format-forge": {
+      "command": {
+        "name": "format-forge-mcp",
+        "args": ["node", "dist/index.js"]
+      },
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}
