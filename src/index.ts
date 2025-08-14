@@ -41,6 +41,47 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   
   const server = new FormatForgeMCPServer();
   
+  // MCP protocol implementation - read from stdin, write to stdout
+  process.stdin.setEncoding('utf8');
+  
+  let buffer = '';
+  
+  process.stdin.on('data', async (chunk: string) => {
+    buffer += chunk;
+    
+    // Process complete JSON-RPC messages
+    let lines = buffer.split('\n');
+    buffer = lines.pop() || ''; // Keep incomplete line in buffer
+    
+    for (const line of lines) {
+      if (line.trim()) {
+        try {
+          const request = JSON.parse(line.trim());
+          const response = await server.handleRequest(request);
+          process.stdout.write(JSON.stringify(response) + '\n');
+        } catch (error) {
+          logger.error('Failed to process request', error as Error, { line });
+          // Send error response
+          const errorResponse = {
+            jsonrpc: '2.0',
+            error: {
+              code: -32700,
+              message: 'Parse error'
+            },
+            id: null
+          };
+          process.stdout.write(JSON.stringify(errorResponse) + '\n');
+        }
+      }
+    }
+  });
+  
+  process.stdin.on('end', () => {
+    logger.info('MCP server shutting down - stdin closed');
+    server.stop();
+    process.exit(0);
+  });
+  
   // Handle process signals
   process.on('SIGINT', () => {
     logger.info('Received SIGINT, shutting down gracefully');
@@ -54,6 +95,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(0);
   });
   
-  // Start the server
+  // Start the server (this will now only log to stderr)
   server.start();
 }

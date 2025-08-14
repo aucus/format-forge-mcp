@@ -40,11 +40,12 @@ export class MCPServerBase implements MCPServer {
       switch (request.method) {
         case 'initialize':
           return this.handleInitialize(request);
-        case 'list_commands':
+        case 'tools/list':
           return this.handleListCommands(request);
+        case 'tools/call':
+          return await this.handleToolCall(request);
         default:
-          // Handle custom commands
-          return await this.handleCustomCommand(request);
+          return this.createErrorResponse(`Unknown method: ${request.method}`, -32601, request.id);
       }
     } catch (error) {
       return this.createErrorResponse(
@@ -61,16 +62,15 @@ export class MCPServerBase implements MCPServer {
    */
   private handleInitialize(request: MCPRequest): MCPResponse {
     return {
+      jsonrpc: '2.0',
       result: {
-        protocolVersion: '1.0.0',
+        protocolVersion: '2025-06-18',
         serverInfo: {
           name: this.name,
           version: this.version
         },
         capabilities: {
-          commands: true,
-          resources: false,
-          tools: false
+          tools: true
         }
       },
       id: request.id
@@ -82,31 +82,47 @@ export class MCPServerBase implements MCPServer {
    */
   private handleListCommands(request: MCPRequest): MCPResponse {
     return {
+      jsonrpc: '2.0',
       result: {
-        commands: this.commands
+        tools: this.commands.map(cmd => ({
+          name: cmd.name,
+          description: cmd.description,
+          inputSchema: cmd.parameters
+        }))
       },
       id: request.id
     };
   }
 
   /**
-   * Handle custom command requests
+   * Handle tool call requests
    */
-  private async handleCustomCommand(request: MCPRequest): Promise<MCPResponse> {
-    const handler = this.commandHandlers.get(request.method);
+  private async handleToolCall(request: MCPRequest): Promise<MCPResponse> {
+    const toolName = request.params?.name;
+    const toolArguments = request.params?.arguments || {};
+    
+    if (!toolName) {
+      return this.createErrorResponse('Tool name is required', -32602, request.id);
+    }
+    
+    const handler = this.commandHandlers.get(toolName);
     
     if (!handler) {
-      return this.createErrorResponse(
-        `Unknown command: ${request.method}`,
-        -32601,
-        request.id
-      );
+      return this.createErrorResponse(`Unknown tool: ${toolName}`, -32601, request.id);
     }
 
     try {
-      const result = await handler(request.params || {});
+      const result = await handler(toolArguments);
       return {
-        result,
+        jsonrpc: '2.0',
+        result: {
+          content: [
+            {
+              type: 'text',
+              text: typeof result === 'string' ? result : JSON.stringify(result, null, 2)
+            }
+          ]
+        },
         id: request.id
       };
     } catch (error) {
@@ -119,7 +135,11 @@ export class MCPServerBase implements MCPServer {
         );
       }
       
-      throw error; // Re-throw non-conversion errors
+      return this.createErrorResponse(
+        error instanceof Error ? error.message : 'Unknown error',
+        -32603,
+        request.id
+      );
     }
   }
 
@@ -139,6 +159,7 @@ export class MCPServerBase implements MCPServer {
     };
 
     return {
+      jsonrpc: '2.0',
       error,
       id
     };
@@ -168,8 +189,9 @@ export class MCPServerBase implements MCPServer {
    * Start the MCP server
    */
   start(): void {
-    console.log(`${this.name} v${this.version} started`);
-    console.log(`Registered commands: ${this.commands.map(c => c.name).join(', ')}`);
+    // MCP servers should not output to stdout - use stderr for logging
+    console.error(`${this.name} v${this.version} started`);
+    console.error(`Registered commands: ${this.commands.map(c => c.name).join(', ')}`);
   }
 
   /**
@@ -196,6 +218,6 @@ export class MCPServerBase implements MCPServer {
    * Stop the MCP server
    */
   stop(): void {
-    console.log(`${this.name} stopped`);
+    console.error(`${this.name} stopped`);
   }
 }

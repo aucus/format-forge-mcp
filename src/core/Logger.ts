@@ -111,25 +111,22 @@ export class Logger {
 
   /**
    * Output log entry to console
+   * MCP servers should only use stderr for logging to avoid interfering with JSON-RPC communication
    */
   private outputToConsole(entry: LogEntry): void {
     const timestamp = entry.timestamp.toISOString();
     const levelName = LogLevel[entry.level];
     const prefix = `[${timestamp}] ${levelName}:`;
 
-    switch (entry.level) {
-      case LogLevel.DEBUG:
-        console.debug(prefix, entry.message, entry.context || '');
-        break;
-      case LogLevel.INFO:
-        console.info(prefix, entry.message, entry.context || '');
-        break;
-      case LogLevel.WARN:
-        console.warn(prefix, entry.message, entry.context || '');
-        break;
-      case LogLevel.ERROR:
-        console.error(prefix, entry.message, entry.error || '', entry.context || '');
-        break;
+    // All output goes to stderr for MCP compatibility
+    const message = entry.context 
+      ? `${prefix} ${entry.message} ${JSON.stringify(entry.context)}`
+      : `${prefix} ${entry.message}`;
+    
+    if (entry.error) {
+      console.error(message, entry.error);
+    } else {
+      console.error(message);
     }
   }
 

@@ -19,18 +19,28 @@
     "test:integration": "jest --testPathPattern=integration",
     "test:coverage": "jest --coverage"
   },
-  "keywords": ["mcp", "format", "converter", "csv", "excel", "json", "xml", "markdown"],
+  "keywords": [
+    "mcp",
+    "format",
+    "converter",
+    "csv",
+    "excel",
+    "json",
+    "xml",
+    "markdown"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "papaparse": "^5.4.1",
+    "@modelcontextprotocol/sdk": "^1.17.2",
     "exceljs": "^4.4.0",
-    "xml2js": "^0.6.2",
-    "marked": "^12.0.0"
+    "marked": "^12.0.0",
+    "papaparse": "^5.4.1",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
     "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
     "@types/papaparse": "^5.3.14",
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^6.0.0",

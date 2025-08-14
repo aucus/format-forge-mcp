@@ -2,12 +2,14 @@
  * MCP Server interfaces
  */
 export interface MCPRequest {
+  jsonrpc?: string;
   method: string;
-  params: any;
+  params?: any;
   id?: string | number;
 }
 
 export interface MCPResponse {
+  jsonrpc?: string;
   result?: any;
   error?: MCPError;
   id?: string | number;
