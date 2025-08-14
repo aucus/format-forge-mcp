@@ -30,6 +30,22 @@ export class ConversionOrchestrator {
     this.keyTransformer = new KeyTransformer();
     this.columnManipulator = new ColumnManipulator();
     this.dataFilter = new DataFilter();
+    
+    // Initialize format handlers
+    this.initializeHandlers();
+  }
+
+  /**
+   * Initialize format handlers
+   */
+  private async initializeHandlers(): Promise<void> {
+    try {
+      const { FormatHandlerRegistry } = await import('../handlers/FormatHandlerRegistry.js');
+      const registry = FormatHandlerRegistry.getInstance();
+      await registry.initializeDefaultHandlers();
+    } catch (error) {
+      this.logger.error('Failed to initialize format handlers', error as Error);
+    }
   }
 
   /**

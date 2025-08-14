@@ -186,18 +186,34 @@ export class FormatHandlerRegistry {
   async initializeDefaultHandlers(): Promise<void> {
     this.logger.info('Initializing default format handlers');
     
-    // This method will be implemented when we create the specific handlers
-    // For now, it's a placeholder that logs the intention
-    
-    const validation = this.validateRegistry();
-    if (!validation.isValid) {
-      this.logger.warn('Registry validation failed after initialization', {
-        missingFormats: validation.missingFormats
-      });
-    } else {
-      this.logger.info('Default format handlers initialized successfully', {
-        supportedFormats: this.getSupportedFormats()
-      });
+    try {
+      // Import and register all format handlers
+      const { CsvFormatHandler } = await import('./CsvFormatHandler.js');
+      const { JsonFormatHandler } = await import('./JsonFormatHandler.js');
+      const { XmlFormatHandler } = await import('./XmlFormatHandler.js');
+      const { MarkdownFormatHandler } = await import('./MarkdownFormatHandler.js');
+      const { ExcelFormatHandler } = await import('./ExcelFormatHandler.js');
+      
+      // Register handlers
+      this.registerHandler('csv', new CsvFormatHandler());
+      this.registerHandler('json', new JsonFormatHandler());
+      this.registerHandler('xml', new XmlFormatHandler());
+      this.registerHandler('md', new MarkdownFormatHandler());
+      this.registerHandler('xlsx', new ExcelFormatHandler());
+      
+      const validation = this.validateRegistry();
+      if (!validation.isValid) {
+        this.logger.warn('Registry validation failed after initialization', {
+          missingFormats: validation.missingFormats
+        });
+      } else {
+        this.logger.info('Default format handlers initialized successfully', {
+          supportedFormats: this.getSupportedFormats()
+        });
+      }
+    } catch (error) {
+      this.logger.error('Failed to initialize default handlers', error as Error);
+      throw error;
     }
   }
 }
